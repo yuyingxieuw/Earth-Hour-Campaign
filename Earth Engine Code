@@ -1,0 +1,100 @@
+//set boundary
+var roi = ATBoundary;
+
+//load the tiff image from assets
+var nightlight1 = ee.Image('projects/ee-xieyuying993/assets/Final/final1')
+//Map.centerObject(nightlight1, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight1, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0308B');
+
+
+var nightlight2 = ee.Image('projects/ee-xieyuying993/assets/L4A_A_RGB')
+//Map.centerObject(nightlight2, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight2, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0308A');
+
+
+var nightlight3 = ee.Image('projects/ee-xieyuying993/assets/AT0324A')
+Map.centerObject(nightlight3, 8); // Adjust zoom level as necessary
+Map.addLayer(nightlight3, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0324A');
+
+var nightlight4 = ee.Image('projects/ee-xieyuying993/assets/AT0324B')
+Map.centerObject(nightlight4, 8); // Adjust zoom level as necessary
+Map.addLayer(nightlight4, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0324B');
+
+var nightlight5 = ee.Image('projects/ee-xieyuying993/assets/AT0314A')
+//Map.centerObject(nightlight5, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight5, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314A');
+
+var nightlight6 = ee.Image('projects/ee-xieyuying993/assets/AT0314B')
+//Map.centerObject(nightlight6, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight6, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314B');
+
+var nightlight7 = ee.Image('projects/ee-xieyuying993/assets/AT0314A2')
+//Map.centerObject(nightlight7, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight7, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314A2');
+
+var nightlight8 = ee.Image('projects/ee-xieyuying993/assets/AT0314B2')
+//Map.centerObject(nightlight8, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight8, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314B2');
+
+//Clip the data 0308
+var nightlight2Clipped = nightlight2.clipToCollection(roi);
+Map.centerObject(nightlight2Clipped, 8); // Adjust zoom level as necessary
+Map.addLayer(nightlight2Clipped, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0308AClipped');
+
+
+//Clip the data 0324
+var nightlight3Clipped = nightlight3.clipToCollection(roi);
+Map.centerObject(nightlight3Clipped, 8); // Adjust zoom level as necessary
+Map.addLayer(nightlight3Clipped, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0324AClipped');
+
+// Combine the data 0314
+var nightlight0314 = nightlight7.addBands(nightlight5);
+//Map.centerObject(nightlight0314, 8); // Adjust zoom level as necessary
+//Map.addLayer(nightlight0314, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314combined');
+
+//Clip the data 0314
+var nightlight0314Clipped = nightlight0314.clipToCollection(roi);
+Map.centerObject(nightlight0314Clipped, 8); // Adjust zoom level as necessary
+Map.addLayer(nightlight0314Clipped, {bands: ['b1', 'b2', 'b3'], min: 0, max: 255}, 'Nightlight Image 0314AClipped');
+
+// calculating the brightness 0308
+var redband0308 = nightlight2Clipped.select('b1');
+var greenband0308 = nightlight2Clipped.select('b2');
+var blueband0308 = nightlight2Clipped.select('b3');
+
+var brightness0308= redband0308.multiply(0.2989)
+                   .add(greenband0308.multiply(0.5870))
+                   .add(blueband0308.multiply(0.1140));
+
+// Display the brightness image 0308
+Map.addLayer(brightness0308, {min: 0, max: 255}, 'Brightness0308');
+
+
+
+// calculating the brightness 0324
+var redband0324 = nightlight3Clipped.select('b1');
+var greenband0324 = nightlight3Clipped.select('b2');
+var blueband0324 = nightlight3Clipped.select('b3');
+
+var brightness0324= redband0324.multiply(0.2989)
+                   .add(greenband0324.multiply(0.5870))
+                   .add(blueband0324.multiply(0.1140));
+// Display the brightness image 0324
+Map.addLayer(brightness0324, {min: 0, max: 255}, 'Brightness0324');
+
+// calculating the brightness 0414
+var redband0414 = nightlight0314Clipped.select('b1');
+var greenband0414 = nightlight0314Clipped.select('b2');
+var blueband0414 = nightlight0314Clipped.select('b3');
+
+var brightness0414 = redband0414.multiply(0.2989)
+                   .add(greenband0414.multiply(0.5870))
+                   .add(blueband0414.multiply(0.1140));
+// Display the brightness image 0414
+Map.addLayer(brightness0414, {min: 0, max: 255}, 'Brightness0414');
+
+// calculate index-brightness changes
+var index1 = (brightness0414 - brightness0324) / brightness0324;
+
+console.log(index1)
+Map.addLayer(index1, {min: 0, max: 255}, 'index1');
