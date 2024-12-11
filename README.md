@@ -1,6 +1,6 @@
 # Who Turned off the Lights: Analyzing Participation in the Earth Hour Campaign
 
-### Team Member**:
+### Team Member:
 - Hyein Chae (Department of Built Environment)
 - Yuying Xie (Department of Geography)
 
